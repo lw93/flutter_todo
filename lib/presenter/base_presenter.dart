@@ -3,6 +3,9 @@ import '../ui/base_view.dart';
 
 abstract class BasePresenter<M extends BaseModel, V extends BaseView> {
   M get model => _model;
+
+  set model(M model) => _model = model;
+
   M _model;
 
   V get view => _view;

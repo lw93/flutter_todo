@@ -11,7 +11,7 @@ abstract class BaseState<T extends StatefulWidget, P extends BasePresenter<dynam
 
   P initPresenter();
 
-  void initData() {}
+  void initData();
 
   @override
   void initState() {

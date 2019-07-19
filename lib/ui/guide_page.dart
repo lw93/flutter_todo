@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-
 import '../presenter/guide_presenter.dart';
 import '../res/scroll_physics_theme.dart';
 import '../utils/image_util.dart';
+import 'base_view.dart';
+import '../utils/preferences_util.dart';
 
 class GuidePage extends StatefulWidget {
   GuidePage({Key key}) : super(key: key);
@@ -11,17 +12,15 @@ class GuidePage extends StatefulWidget {
   _GuidePageState createState() => _GuidePageState();
 }
 
-class _GuidePageState extends State<GuidePage> {
-  GuidePresenter _guidePresenter = GuidePresenter();
-  PageController _pageController = PageController();
+class _GuidePageState extends BaseState<GuidePage, GuidePresenter>
+    implements BaseView {
   int guideSize = 0;
   List<String> guideImgNames;
   int _pageIndex = 0;
 
   @override
-  void initState() {
-    super.initState();
-    guideImgNames = _guidePresenter.getImgPath();
+  void initData() {
+    guideImgNames = presenter.getImgPath();
     guideSize = guideImgNames.length;
   }
 
@@ -38,7 +37,6 @@ class _GuidePageState extends State<GuidePage> {
           child: Offstage(
             offstage: false,
             child: PageView.builder(
-              controller: _pageController,
               physics: PhysicsTheme.commonScrollPhysicsTheme,
               itemCount: guideSize,
               itemBuilder: ((context, index) {
@@ -53,6 +51,7 @@ class _GuidePageState extends State<GuidePage> {
                       margin: EdgeInsets.only(bottom: 48),
                       child: FlatButton(
                           onPressed: () {
+                            PreferencesUtil.saveMessageByBool(PreferencesKeys.showGuide, true);
                             Navigator.pushReplacementNamed(context, "/main");
                           },
                           child: Text("开始使用"),
@@ -112,13 +111,17 @@ class _GuidePageState extends State<GuidePage> {
                       width: 10,
                       height: 10,
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.black12),
+                          shape: BoxShape.circle, color: Colors.black12),
                       margin: EdgeInsets.only(left: 16, bottom: 32)),
                 ],
               ),
             )),
       ],
     );
+  }
+
+  @override
+  GuidePresenter initPresenter() {
+    return GuidePresenter(this);
   }
 }
