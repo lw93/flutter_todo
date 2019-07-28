@@ -3,7 +3,6 @@ import '../presenter/guide_presenter.dart';
 import '../res/scroll_physics_theme.dart';
 import '../utils/image_util.dart';
 import 'base_view.dart';
-import '../utils/preferences_util.dart';
 
 class GuidePage extends StatefulWidget {
   GuidePage({Key key}) : super(key: key);
@@ -51,8 +50,7 @@ class _GuidePageState extends BaseState<GuidePage, GuidePresenter>
                       margin: EdgeInsets.only(bottom: 48),
                       child: FlatButton(
                           onPressed: () {
-                            PreferencesUtil.saveMessageByBool(PreferencesKeys.showGuide, true);
-                            Navigator.pushReplacementNamed(context, "/main");
+                            presenter.jumpToMain(context);
                           },
                           child: Text("开始使用"),
                           color: Colors.black54,

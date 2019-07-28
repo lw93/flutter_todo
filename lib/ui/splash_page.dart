@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../presenter/splash_presenter.dart';
+import 'base_view.dart';
 import '../utils/image_util.dart';
 
 class SplashPage extends StatefulWidget {
@@ -11,24 +13,10 @@ class SplashPage extends StatefulWidget {
   _SplashPageState createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
+class _SplashPageState extends BaseState<SplashPage, SplashPresenter>
+    implements BaseView {
   Timer countDownTime;
   var countDownDuration = 3;
-
-  @override
-  void initState() {
-    super.initState();
-    countDownTime = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if (countDownDuration == 0) {
-          countDownTime.cancel();
-          Navigator.pushReplacementNamed(context, "/guide");
-        } else {
-          countDownDuration = countDownDuration - 1;
-        }
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,5 +79,24 @@ class _SplashPageState extends State<SplashPage> {
       countDownTime = null;
     }
     super.dispose();
+  }
+
+  @override
+  void initData() {
+    countDownTime = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (countDownDuration == 0) {
+          countDownTime.cancel();
+          presenter.jumpToNext(context);
+        } else {
+          countDownDuration = countDownDuration - 1;
+        }
+      });
+    });
+  }
+
+  @override
+  SplashPresenter initPresenter() {
+    return SplashPresenter(this);
   }
 }

@@ -15,6 +15,8 @@ class GuidePresenter extends BasePresenter<GuideModel, BaseView> {
   }
 
   jumpToMain(BuildContext context) {
-    Future<bool> flag = model.getGuideFlag(PreferencesKeys.showGuide);
+    model.saveGuideFlag(PreferencesKeys.showGuide, true);
+    Navigator.pushReplacementNamed(context, "/main");
   }
+
 }
