@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-class Colors {
+class LocalColors {
   static const Color app_main = Color(0xFF666666);
 
   static const Color text_dark = Color(0xFF333333);
