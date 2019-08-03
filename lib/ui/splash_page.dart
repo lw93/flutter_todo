@@ -69,7 +69,7 @@ class _SplashPageState extends BaseState<SplashPage, SplashPresenter>
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );*/
 
-    return Image.asset(ImageUtil.getImgByName("splash"));
+    return Image.asset(ImageUtil.getImgByName("splash"), fit: BoxFit.fill,);
   }
 
   @override

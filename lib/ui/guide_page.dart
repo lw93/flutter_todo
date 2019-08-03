@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../presenter/guide_presenter.dart';
 import '../res/scroll_physics_theme.dart';
 import '../utils/image_util.dart';
@@ -43,24 +44,27 @@ class _GuidePageState extends BaseState<GuidePage, GuidePresenter>
                   return Image.asset(
                       ImageUtil.getImgByName(guideImgNames[index]));
                 } else {
-                  return Stack(children: <Widget>[
-                    Image.asset(ImageUtil.getImgByName(guideImgNames[index])),
-                    Container(
-                      alignment: Alignment.bottomCenter,
-                      margin: EdgeInsets.only(bottom: 48),
-                      child: FlatButton(
-                          onPressed: () {
-                            presenter.jumpToMain(context);
-                          },
-                          child: Text("开始使用"),
-                          color: Colors.black54,
-                          textColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                          padding: EdgeInsets.only(
-                              top: 12, bottom: 12, left: 48, right: 48)),
-                    ),
-                  ]);
+                  return Stack(
+                      fit: StackFit.expand,
+                      children: <Widget>[
+                        Image.asset(
+                            ImageUtil.getImgByName(guideImgNames[index])),
+                        Container(
+                          alignment: Alignment.bottomCenter,
+                          margin: EdgeInsets.only(bottom: 48),
+                          child: FlatButton(
+                              onPressed: () {
+                                presenter.jumpToMain(context);
+                              },
+                              child: Text("开始使用"),
+                              color: Colors.black54,
+                              textColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                              padding: EdgeInsets.only(
+                                  top: 12, bottom: 12, left: 48, right: 48)),
+                        ),
+                      ]);
                 }
               }),
               onPageChanged: (index) {
