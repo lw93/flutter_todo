@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../ui/guide_page.dart';
+import '../ui/login_page.dart';
 import '../ui/main_page.dart';
 import '../ui/splash_page.dart';
-import '../ui/guide_page.dart';
+import '../ui/register_page.dart';
+
 
 final onGenerateRoute = (RouteSettings settings) {
   final String pageName = settings.name;
@@ -16,7 +19,7 @@ final onGenerateRoute = (RouteSettings settings) {
       return route;
     }
     final Route route =
-        MaterialPageRoute(builder: (contex) => pageContentBuilder(contex));
+    MaterialPageRoute(builder: (contex) => pageContentBuilder(contex));
     return route;
   }
 };
@@ -24,5 +27,7 @@ final onGenerateRoute = (RouteSettings settings) {
 final routers = {
   '/': (context) => SplashPage(),
   '/guide': (context) => GuidePage(),
-  '/main': (context) => MainPage(title: "MainPage"),
+  '/login': (context) => LoginPage(),
+  '/register': (context) => RegisterPage(),
+  '/main': (context) => MainPage(),
 };

@@ -17,7 +17,7 @@ class SplashPresenter extends BasePresenter<SplashModel, BaseView> {
         Navigator.pushReplacementNamed(context, "/guide");
         return;
       }
-      Navigator.pushReplacementNamed(context, "/main");
+      Navigator.pushReplacementNamed(context, "/login");
     });
   }
 
