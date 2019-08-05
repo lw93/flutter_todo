@@ -41,14 +41,12 @@ class _GuidePageState extends BaseState<GuidePage, GuidePresenter>
               itemCount: guideSize,
               itemBuilder: ((context, index) {
                 if (index < guideSize - 1) {
-                  return Image.asset(
-                      ImageUtil.getImgByName(guideImgNames[index]));
+                  return Image.asset(ImageUtil.getImgByName(guideImgNames[index]));
                 } else {
                   return Stack(
                       fit: StackFit.expand,
                       children: <Widget>[
-                        Image.asset(
-                            ImageUtil.getImgByName(guideImgNames[index])),
+                        Image.asset(ImageUtil.getImgByName(guideImgNames[index]),fit:BoxFit.fill),
                         Container(
                           alignment: Alignment.bottomCenter,
                           margin: EdgeInsets.only(bottom: 48),
