@@ -23,15 +23,20 @@ class LoginPresenter extends BasePresenter<LoginModel, LoginView> {
       'username': name,
       'password': password,
     });
-
     model.login(request).then((onValue) {
-      print(onValue.toString());
+      if (onValue != null) {
+        if (onValue.code == 600 && onValue.data != null) {
+          var loginResponse = LoginResponse.fromJson(onValue.data);
+          view.onHttpSuccess(loginResponse);
+        }
+      }
+      view.onHttpError("请求失败");
+    }).catchError((Object error) {
+      view.onHttpError("请求失败");
     });
   }
-
 
   void jumpToRegister(BuildContext context) {
     Navigator.pushNamed(context, "/register");
   }
-
 }

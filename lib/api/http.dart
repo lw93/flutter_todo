@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 
@@ -50,6 +51,7 @@ class HttpManager {
     } on DioError catch (e) {
       /// 打印请求失败相关信息
       print('请求出错：' + e.toString());
+      result = e.response.data;
     }
     return result;
   }
@@ -59,10 +61,10 @@ class HttpManager {
     if (dio == null) {
       /// 全局属性：请求前缀、连接超时时间、响应超时时间
       Options options = new Options(
-        baseUrl: TodoApi.BASE_URL,
-        connectTimeout: CONNECT_TIMEOUT,
-        receiveTimeout: RECEIVE_TIMEOUT,
-      );
+          baseUrl: TodoApi.BASE_URL,
+          connectTimeout: CONNECT_TIMEOUT,
+          receiveTimeout: RECEIVE_TIMEOUT,
+          contentType: ContentType.parse("application/x-www-form-urlencoded"));
       dio = Dio(options);
     }
     return dio;

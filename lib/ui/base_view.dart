@@ -4,7 +4,7 @@ import '../presenter/base_presenter.dart';
 
 abstract class BaseView {}
 
-abstract class BaseState<T extends StatefulWidget, P extends BasePresenter<dynamic, dynamic>> extends State<T> implements BaseView {
+abstract class BaseState<T extends StatefulWidget, P extends BasePresenter> extends State<T> implements BaseView {
   P presenter;
 
   bool isLoading = false;

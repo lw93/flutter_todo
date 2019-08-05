@@ -1,12 +1,18 @@
-class ToDoResponse<T> {
+class ToDoResponse {
   int code;
   String msg;
-  T data;
+  Map<String, dynamic> data;
 
   ToDoResponse.fromJson(Map<String, dynamic> json)
       : code = json['code'],
         msg = json['msg'],
         data = json['data'];
+
+  Map<String, dynamic> toJson() => {
+        'code': code,
+        'msg': msg,
+        'data': data,
+      };
 }
 
 class LoginResponse {
@@ -17,13 +23,8 @@ class LoginResponse {
       : user = json['user'],
         setting = json['setting'];
 
-  Map<String, dynamic> toJson() =>
-      {
-        'setting': setting,
-        'user': user
-      };
+  Map<String, dynamic> toJson() => {'setting': setting, 'user': user};
 }
-
 
 //计划者即使用者
 class Planer {
@@ -46,8 +47,7 @@ class Planer {
         username = json['username'],
         email = json['email'];
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'createdAt': createdAt,
         'email': email,
         'emailVerified': emailVerified,
@@ -73,8 +73,7 @@ class PlanerSetting {
         userId = json['userId'],
         emailEveryDayEable = json['emailEveryDayEable'];
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'createdAt': createdAt,
         'emailEveryDayEable': emailEveryDayEable,
         'objectId': objectId,
@@ -113,8 +112,7 @@ class Todo<TAG> {
         userId = json['userId'],
         updatedAt = json['updatedAt'];
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'createdAt': createdAt,
         'content': content,
         'completed': completed,
@@ -137,8 +135,8 @@ class Group extends Todo {
   String projectId;
 
   Group.fromJson(Map<String, dynamic> json)
-      :name=json['name'],
-        projectId=json['projectId'],
+      : name = json['name'],
+        projectId = json['projectId'],
         super.fromJson(json);
 
   @override
@@ -155,8 +153,8 @@ class Project extends Todo {
   String projectId;
 
   Project.fromJson(Map<String, dynamic> json)
-      :name=json['name'],
-        projectId=json['projectId'],
+      : name = json['name'],
+        projectId = json['projectId'],
         super.fromJson(json);
 
   @override
@@ -177,12 +175,9 @@ class LoginRequest {
       : username = json['username'],
         password = json['password'];
 
-  Map<String, dynamic> toJson() =>
-      {
-        'username': username,
-        'password': password
-      };
+  Map<String, dynamic> toJson() => {'username': username, 'password': password};
 }
+
 //post
 class RegisterRequest {
   String email;
@@ -195,11 +190,7 @@ class RegisterRequest {
         password = json['password'];
 
   Map<String, dynamic> toJson() =>
-      {
-        'email': email,
-        'nikename': nikename,
-        'password': password
-      };
+      {'email': email, 'nikename': nikename, 'password': password};
 }
 
 //post
@@ -221,8 +212,7 @@ class CreateTodoRequest {
         completed = json['completed'],
         onFile = json['onFile'];
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'title': title,
         'userId': userId,
         'content': content,
@@ -265,15 +255,14 @@ class CreateGroupRequest {
         projectId = json['projectId'],
         priority = json['priority'];
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'name': name,
         'userId': userId,
         'projectId': projectId,
         'priority': priority,
       };
-
 }
+
 //post
 class UpdateGroupRequest {
   String name;
@@ -287,15 +276,13 @@ class UpdateGroupRequest {
         projectId = json['projectId'],
         priority = json['priority'];
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'name': name,
         'objectId': objectId,
         'projectId': projectId,
         'priority': priority,
       };
 }
-
 
 //post
 class CreateProjectRequest {
