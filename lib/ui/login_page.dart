@@ -65,6 +65,7 @@ class _LoginPageState extends BaseState<LoginPage, LoginPresenter>
                         child: TextField(
                           focusNode: _userNamefocusNode,
                           controller: _userNameController,
+                          keyboardType: TextInputType.emailAddress,
                           onSubmitted: (input) {
                             _userNamefocusNode.unfocus();
                             FocusScope.of(context)
@@ -193,6 +194,20 @@ class _LoginPageState extends BaseState<LoginPage, LoginPresenter>
           children: <Widget>[
             AlertDialog(
               title: Text(message),
+              actions: <Widget>[
+                Padding(
+                    padding: EdgeInsets.all(8),
+                    child: InkWell(
+                      child: Text("知道了",
+                          style: TextStyle(
+                            color: Colors.lightBlue,
+                            fontSize: 18.0,
+                          )),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                    )),
+              ],
             )
           ],
         ));
@@ -201,5 +216,6 @@ class _LoginPageState extends BaseState<LoginPage, LoginPresenter>
   @override
   void onHttpSuccess(LoginResponse response) {
     hideLoading();
+    if (response != null) {}
   }
 }

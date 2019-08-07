@@ -16,8 +16,8 @@ class ToDoResponse {
 }
 
 class LoginResponse {
-  Planer user;
-  PlanerSetting setting;
+  Map<String, dynamic> user;
+  Map<String, dynamic> setting;
 
   LoginResponse.fromJson(Map<String, dynamic> json)
       : user = json['user'],
