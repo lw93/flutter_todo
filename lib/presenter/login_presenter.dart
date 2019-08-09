@@ -28,6 +28,7 @@ class LoginPresenter extends BasePresenter<LoginModel, LoginView> {
         if (onValue.code == 600 && onValue.data != null) {
           var loginResponse = LoginResponse.fromJson(onValue.data);
           view.onHttpSuccess(loginResponse);
+          return;
         }
       }
       view.onHttpError("请求失败");

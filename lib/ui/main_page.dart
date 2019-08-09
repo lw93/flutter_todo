@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'base_view.dart';
+import '../presenter/main_presenter.dart';
+
+abstract class MainView extends BaseView {
+  void onHttpError(String message);
+
+  void onHttpSuccess(String response);
+}
 
 class MainPage extends StatefulWidget {
   MainPage({Key key, this.title}) : super(key: key);
@@ -9,7 +17,8 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends BaseState<MainPage, MainPresenter> implements MainView {
+
   int _counter = 0;
 
   void _incrementCounter() {
@@ -76,5 +85,26 @@ class _MainPageState extends State<MainPage> {
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  @override
+  void initData() {
+    // TODO: implement initData
+  }
+
+  @override
+  MainPresenter initPresenter() {
+    // TODO: implement initPresenter
+    return MainPresenter(this);
+  }
+
+  @override
+  void onHttpError(String message) {
+    // TODO: implement onHttpError
+  }
+
+  @override
+  void onHttpSuccess(String response) {
+    // TODO: implement onHttpSuccess
   }
 }

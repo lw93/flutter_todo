@@ -23,7 +23,9 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends BaseState<RegisterPage, RegisterPresenter>
     implements RegisterView {
   FocusNode _userEmailfocusNode, _userPassdfocusNode, _userRePassdfocusNode;
-  TextEditingController _userEmailController, _userPassdController, _userRePassdController;
+  TextEditingController _userEmailController,
+      _userPassdController,
+      _userRePassdController;
   String _userEamil, _userPass, _userRePass;
 
   @override
@@ -129,7 +131,8 @@ class _RegisterPageState extends BaseState<RegisterPage, RegisterPresenter>
                             child: Text("注册"),
                             onPressed: () {
                               showLoading();
-                              presenter?.register(_userEamil, _userPass, _userRePass);
+                              presenter?.register(
+                                  _userEamil, _userPass, _userRePass);
                             },
                             splashColor: Colors.black26,
                             textColor: Colors.blue,
@@ -183,6 +186,8 @@ class _RegisterPageState extends BaseState<RegisterPage, RegisterPresenter>
   @override
   void onHttpSuccess(LoginResponse response) {
     hideLoading();
-    if (response != null) {}
+    if (response != null) {
+      Navigator.pushNamedAndRemoveUntil(context, "/main",(route) => route == null);
+    }
   }
 }
