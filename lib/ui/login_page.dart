@@ -31,6 +31,9 @@ class _LoginPageState extends BaseState<LoginPage, LoginPresenter>
   @override
   void initData() {
     _userNameController = TextEditingController();
+    presenter?.hasLoginCache()?.then((name){
+      _userNameController.text = name;
+    });
     _userPassdController = TextEditingController();
     _userNamefocusNode = FocusNode();
     _userPassdfocusNode = FocusNode();
@@ -216,6 +219,8 @@ class _LoginPageState extends BaseState<LoginPage, LoginPresenter>
   @override
   void onHttpSuccess(LoginResponse response) {
     hideLoading();
-    if (response != null) {}
+    if (response != null) {
+      Navigator.pushReplacementNamed(context, "/main");
+    }
   }
 }

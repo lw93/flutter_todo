@@ -4,7 +4,7 @@ import '../api/index.dart';
 import '../model/login_model.dart';
 import '../presenter/base_presenter.dart';
 import '../ui/login_page.dart';
-
+import '../utils/preferences_util.dart';
 class LoginPresenter extends BasePresenter<LoginModel, LoginView> {
   LoginPresenter(LoginView view) : super(view) {
     model = LoginModel();
@@ -27,6 +27,8 @@ class LoginPresenter extends BasePresenter<LoginModel, LoginView> {
       if (onValue != null) {
         if (onValue.code == 600 && onValue.data != null) {
           var loginResponse = LoginResponse.fromJson(onValue.data);
+          model.saveUserInfo(loginResponse);
+          PreferencesUtil.saveMessageByStr(PreferencesKeys.pass, password);
           view.onHttpSuccess(loginResponse);
           return;
         }
@@ -39,5 +41,9 @@ class LoginPresenter extends BasePresenter<LoginModel, LoginView> {
 
   void jumpToRegister(BuildContext context) {
     Navigator.pushNamed(context, "/register");
+  }
+
+  Future<String> hasLoginCache() {
+   return model.hasNameCache();
   }
 }

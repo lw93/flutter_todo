@@ -17,6 +17,13 @@ class SplashPresenter extends BasePresenter<SplashModel, BaseView> {
         Navigator.pushReplacementNamed(context, "/guide");
         return;
       }
+      Future<String> name = PreferencesUtil.getMessageByStr(PreferencesKeys.userName);
+      name.then((onValue) {
+        if (onValue!=null && onValue.isNotEmpty) {
+          Navigator.pushReplacementNamed(context, "/main");
+          return;
+        }
+      });
       Navigator.pushReplacementNamed(context, "/login");
     });
   }

@@ -34,4 +34,7 @@ class PreferencesUtil {
 
 class PreferencesKeys {
   static const String showGuide = "showGuide";
+  static const String userName = "userName";
+  static const String pass = "pass";
+  static const String emailEveryDayEable = "emailDaliy";
 }
