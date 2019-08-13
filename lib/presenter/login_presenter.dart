@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'dart:convert';
 import '../api/index.dart';
 import '../model/login_model.dart';
 import '../presenter/base_presenter.dart';
@@ -29,6 +29,7 @@ class LoginPresenter extends BasePresenter<LoginModel, LoginView> {
           var loginResponse = LoginResponse.fromJson(onValue.data);
           model.saveUserInfo(loginResponse);
           PreferencesUtil.saveMessageByStr(PreferencesKeys.pass, password);
+          PreferencesUtil.saveMessageByStr(PreferencesKeys.emailEveryDayEable,jsonEncode(loginResponse.setting));
           view.onHttpSuccess(loginResponse);
           return;
         }

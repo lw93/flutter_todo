@@ -69,14 +69,14 @@ class HttpManager {
       dio.interceptor.request.onSend = (Options options) async {
         //...If no token, request token firstly.
         if(!options.path.contains("/login") && !options.path.contains("/register")){
-          Future<String> name = PreferencesUtil.getMessageByStr(PreferencesKeys.userName);
-          Future<String> pass = PreferencesUtil.getMessageByStr(PreferencesKeys.pass);
+          String name = await PreferencesUtil.getMessageByStr(PreferencesKeys.userName);
+          String pass = await PreferencesUtil.getMessageByStr(PreferencesKeys.pass);
           var request = LoginRequest.fromJson({
             'username': name,
             'password': pass,
           });
           Response response = await dio.post(TodoApi.LOGIN,data: request.toJson());
-          options.headers["token"] = response.data["data"]["token"];
+          //options.headers["token"] = response.data["data"]["token"];
         }
         //Set the token to headers
         return options; //continue

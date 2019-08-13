@@ -61,7 +61,7 @@ class Planer {
 
 class PlanerSetting {
   String createdAt;
-  bool emailEveryDayEable;
+  bool emailEveryDayEnable;
   String objectId;
   String updatedAt;
   String userId;
@@ -71,18 +71,18 @@ class PlanerSetting {
         objectId = json['objectId'],
         updatedAt = json['updatedAt'],
         userId = json['userId'],
-        emailEveryDayEable = json['emailEveryDayEable'];
+        emailEveryDayEnable = json['emailEveryDayEnable'];
 
   Map<String, dynamic> toJson() => {
         'createdAt': createdAt,
-        'emailEveryDayEable': emailEveryDayEable,
+        'emailEveryDayEnable': emailEveryDayEnable,
         'objectId': objectId,
         'updatedAt': updatedAt,
         'userId': userId,
       };
 }
 
-class Todo<TAG> {
+class Todo {
   bool completed;
   String content;
   String createdAt;
@@ -91,7 +91,7 @@ class Todo<TAG> {
   double onFile;
   bool onFileAt;
   int priority;
-  List<TAG> tags;
+  Map<String, dynamic> tags;
   String title;
   String uri;
   String userId;
@@ -151,10 +151,16 @@ class Group extends Todo {
 class Project extends Todo {
   String name;
   String projectId;
+  bool hasCompleteList;
+  bool hasOnFileList;
+  Map<String, dynamic> todes;
 
   Project.fromJson(Map<String, dynamic> json)
       : name = json['name'],
         projectId = json['projectId'],
+        todes = json['todes'],
+        hasCompleteList = json['hasCompleteList'],
+        hasOnFileList = json['hasOnFileList'],
         super.fromJson(json);
 
   @override
@@ -162,6 +168,9 @@ class Project extends Todo {
     var json = super.toJson();
     json['name'] = name;
     json['projectId'] = projectId;
+    json['todes'] = todes;
+    json['hasCompleteList'] = hasCompleteList;
+    json['hasOnFileList'] = hasOnFileList;
     return json;
   }
 }

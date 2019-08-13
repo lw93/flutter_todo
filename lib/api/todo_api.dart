@@ -14,4 +14,5 @@ class TodoApi {
   static const String CREATE_PROJECT = 'api/v1.0/project'; //POST
   static const String UPDATE_PROJECT = 'api/v1.0/project'; //PUT
   static const String DELETE_PROJECT = 'api/v1.0/project/<projectId>'; //DELETE
+  static const String USER_SETTING = 'api/v1.0/users/setting'; //POST
 }

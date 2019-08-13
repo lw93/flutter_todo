@@ -15,7 +15,7 @@ class LoginModel extends BaseModel {
     if (null == loginResponse) return;
     PlanerSetting setting = PlanerSetting.fromJson(loginResponse.setting);
     if (setting != null) {
-      PreferencesUtil.saveMessageByBool(PreferencesKeys.emailEveryDayEable, setting.emailEveryDayEable);
+      PreferencesUtil.saveMessageByBool(PreferencesKeys.emailEveryDayEable, setting.emailEveryDayEnable);
     }
     Planer user = Planer.fromJson(loginResponse.user);
     if (user != null) {
