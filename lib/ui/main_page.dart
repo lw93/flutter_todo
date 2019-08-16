@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../presenter/main_presenter.dart';
 import 'base_view.dart';
-import 'list_page.dart';
+import 'project_page.dart';
 import 'mine_page.dart';
 
 abstract class MainView extends BaseView {
@@ -21,7 +21,7 @@ class _MainPageState extends BaseState<MainPage, MainPresenter>
     implements MainView {
 
   int _selectedIndex = 0;
-  int _listType = 0;
+  int _listType = 1;
   var _pageController = PageController(initialPage: 0);
 
   @override
@@ -69,7 +69,7 @@ class _MainPageState extends BaseState<MainPage, MainPresenter>
         ,
         controller: _pageController,
         itemBuilder: (BuildContext context, int index) {
-          return index == 0 ? TodoListPage(todoType: _listType) : MinePage();
+          return index == 0 ? ProjectPage(todoType: _listType) : MinePage();
         }
         ,
         itemCount: 2,

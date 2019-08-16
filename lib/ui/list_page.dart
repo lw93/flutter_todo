@@ -15,8 +15,7 @@ class TodoListPage extends StatefulWidget {
   _TodoListPageState createState() => _TodoListPageState();
 }
 
-class _TodoListPageState extends BaseState<TodoListPage, TodoListPresenter>
-    with AutomaticKeepAliveClientMixin
+class _TodoListPageState extends BaseState<TodoListPage, TodoListPresenter> with AutomaticKeepAliveClientMixin
     implements TodoListView {
   @override
   Widget build(BuildContext context) {
