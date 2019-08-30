@@ -53,9 +53,9 @@ class DraggableGridView<T> extends StatefulWidget {
     this.canAccept: true,
     //this.deleteIconClickListener,
   }) : assert(
-  items != null,
-        itemBuilder != null,
-  );
+          items != null,
+          itemBuilder != null,
+        );
 
   @override
   State<StatefulWidget> createState() => new _DraggableGridViewState<T>();
@@ -69,7 +69,7 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
   int _willAcceptIndex = -1; //当拖动覆盖到某个item上的时候，记录这个item的坐标
 //  int _draggingItemIndex = -1; //当前被拖动的item坐标
   ScrollController
-  _scrollController; //当item数量超出屏幕 拖动Item到底部或顶部 可使用ScrollController滚动GridView 实现自动滚动的效果。
+      _scrollController; //当item数量超出屏幕 拖动Item到底部或顶部 可使用ScrollController滚动GridView 实现自动滚动的效果。
   List<GlobalKey> pressKeys = List();
   GlobalKey grideKey = GlobalKey();
   bool onDelete = false;
@@ -90,9 +90,8 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
     _scrollController = ScrollController(); /*创建动画控制类对象*/
     animalController =
         AnimationController(duration: Duration(seconds: 1), vsync: this);
-    tween =
-        Tween(begin: Offset(0, 0), end: Offset(0, -1)).animate(
-            animalController);
+    tween = Tween(begin: Offset(0, 0), end: Offset(0, -1))
+        .animate(animalController);
   }
 
   @override
@@ -119,105 +118,96 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
                   key: pressKeys[index],
                   data: _dataList[index],
                   child: DragTarget<T>(
-                    //松手时 如果onWillAccept返回true 那么就会调用，本案例不使用。
+                      //松手时 如果onWillAccept返回true 那么就会调用，本案例不使用。
                       onAccept: (T data) {
-                        print('onAccept');
-                      },
+                    print('onAccept');
+                  },
                       //绘制widget
                       builder: (context, data, rejects) {
-                        return _willAcceptIndex >= 0 &&
-                            _willAcceptIndex == index
-                            ? null
-                            : widget.itemBuilder(
-                            context, _dataList[index], index);
-                      },
+                    return _willAcceptIndex >= 0 && _willAcceptIndex == index
+                        ? null
+                        : widget.itemBuilder(context, _dataList[index], index);
+                  },
                       //手指拖着一个widget从另一个widget头上滑走时会调用
                       onLeave: (T data) {
-                        //TODO 这里应该还可以优化，当用户滑出而又没有滑入某个item的时候 可以重新排列  让当前被拖走的item的空白被填满
-                        print('onLeave ${index}');
-                        int fromIndex = _dataList.indexOf(data);
-                        print('$data is Leaving item $fromIndex');
-                        _willAcceptIndex = -1;
-                        GlobalKey currentKey = pressKeys[fromIndex];
-                        BuildContext currentContxt = currentKey.currentContext;
-                        RenderBox renderBox = currentContxt.findRenderObject();
-                        var offset = renderBox.localToGlobal(Offset.zero);
+                    //TODO 这里应该还可以优化，当用户滑出而又没有滑入某个item的时候 可以重新排列  让当前被拖走的item的空白被填满
+                    int fromIndex = _dataList.indexOf(data);
+                    print('onLeave: ${index} from item: $fromIndex');
+                    _willAcceptIndex = -1;
+                    GlobalKey currentKey = pressKeys[fromIndex];
+                    BuildContext currentContxt = currentKey.currentContext;
+                    RenderBox renderBox = currentContxt.findRenderObject();
+                    var offset = renderBox.localToGlobal(Offset.zero);
 
+                    RenderBox renderBoxDelete =
+                        deleteKey.currentContext.findRenderObject();
+                    var offsetDelete =
+                        renderBoxDelete.localToGlobal(Offset.zero);
+                    print(
+                        'onLeave renderBoxDelete x= ${offsetDelete.dx} y=${offsetDelete.dy}');
 
-                        RenderBox renderBoxDelete = deleteKey.currentContext
-                            .findRenderObject();
-                        var offsetDelete = renderBoxDelete.localToGlobal(
-                            Offset.zero);
-                        print('onLeave renderBoxDelete x= ${offsetDelete
-                            .dx} y=${offsetDelete.dy}');
-
-                        if (offset.dy + currentContxt.size.height / 2 >
-                            offsetDelete.dy - deleteKey.currentContext.size.height*3/2) {
-                          setState(() {
-                            onDelete = true;
-                          });
-                        } else {
-                          setState(() {
-                            onDelete = false;
-                          });
-                        }
-                        print(
-                            'onLeave offset x = ${offset.dx} y = ${offset
-                                .dy} ${offset
-                                .distance} key = ${pressKeys[index]
-                                .currentContext.size
-                                .height} ${pressKeys[index]
-                                .currentContext.size.width}');
-                        setState(() {
-                          _showItemWhenCovered = false;
-                          //_dataList = _dataBackup.sublist(0);
-                        });
-                      },
+                    if (offset.dy + currentContxt.size.height / 2 >
+                        offsetDelete.dy -
+                            deleteKey.currentContext.size.height * 3 / 2) {
+                      setState(() {
+                        onDelete = true;
+                      });
+                    } else {
+                      setState(() {
+                        onDelete = false;
+                      });
+                    }
+                    print(
+                        'onLeave offset x = ${offset.dx} y = ${offset.dy} ${offset.distance} key = ${pressKeys[index].currentContext.size.height} ${pressKeys[index].currentContext.size.width}');
+                    setState(() {
+                      _showItemWhenCovered = false;
+                      //_dataList = _dataBackup.sublist(0);
+                    });
+                  },
                       //接下来松手 是否需要将数据给这个widget？  因为需要在拖动时改变UI，所以在这里直接修改数据源
                       onWillAccept: (T fromData) {
-                        print('onWillAccept');
-                        int fromIndex = _dataList.indexOf(fromData);
-                        print('$index will accept item ${fromIndex}');
-                        final accept = fromData != _dataList[index];
+                    print('onWillAccept');
+                    int fromIndex = _dataList.indexOf(fromData);
+                    print('$index will accept item ${fromIndex}');
+                    final accept = fromData != _dataList[index];
 
-                        RenderBox renderBoxDelete = deleteKey.currentContext
-                            .findRenderObject();
-                        var offsetDelete = renderBoxDelete.localToGlobal(
-                            Offset.zero);
-                        print('onWillAccept renderBoxDelete x= ${offsetDelete
-                            .dx} y=${offsetDelete.dy}');
+                    RenderBox renderBoxDelete =
+                        deleteKey.currentContext.findRenderObject();
+                    var offsetDelete =
+                        renderBoxDelete.localToGlobal(Offset.zero);
+                    print(
+                        'onWillAccept renderBoxDelete x= ${offsetDelete.dx} y=${offsetDelete.dy}');
 
-                        double mod = index % 2.0;
-                        double height = pressKeys[index].currentContext.size
-                            .height;
-                        double positiomn;
-                        if (mod == 1) {
-                          positiomn = index / 2 * height;
-                        } else {
-                          positiomn = (index + 1) / 2 * height;
-                        }
-                        print('onWillAccept positiomn height ${positiomn}');
-                        _scrollController.animateTo(positiomn - height,
-                            curve: Curves.ease,
-                            duration: Duration(milliseconds: 800));
-                        if (accept) {
-                          _willAcceptIndex = index;
-                          _showItemWhenCovered = true;
-                          //_dataList = _dataBackup.sublist(0);
-                          //final fromData = _dataList[index];
-                          setState(() {
-                            T tmp = _dataList[index];
-                            _dataList[index] = fromData;
-                            _dataList[fromIndex] = tmp;
-                            GlobalKey tmpKey = pressKeys[index];
-                            pressKeys[index] = pressKeys[fromIndex];
-                            pressKeys[fromIndex] = tmpKey;
+                    double mod = index % 2.0;
+                    double height = pressKeys[index].currentContext.size.height;
+                    double positiomn;
+                    if (mod == 1) {
+                      positiomn = index / 2 * height;
+                    } else {
+                      positiomn = (index + 1) / 2 * height;
+                    }
+                    print('onWillAccept positiomn height ${positiomn}');
+                    _scrollController.animateTo(positiomn - height,
+                        curve: Curves.ease,
+                        duration: Duration(milliseconds: 800));
+                    if (accept) {
+                      _willAcceptIndex = index;
+                      _showItemWhenCovered = true;
+                      //_dataList = _dataBackup.sublist(0);
+                      //final fromData = _dataList[index];
+                      setState(() {
+                        T tmp = _dataList[index];
+                        _dataList[index] = fromData;
+                        _dataList[fromIndex] = tmp;
+                        GlobalKey tmpKey = pressKeys[index];
+                        pressKeys[index] = pressKeys[fromIndex];
+                        pressKeys[fromIndex] = tmpKey;
 //                    _dataList.removeAt(index);
 //                    _dataList.insert(index, fromData);
-                          });
-                        }
-                        return accept;
-                      }),
+                      });
+                    }
+                    return accept;
+                  }),
                   onDragStarted: () {
                     //开始拖动，备份数据源
                     //_draggingItemIndex = index;
@@ -232,12 +222,13 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
                     print(
                         'item $index ---------------------------onDraggableCanceled,velocity = $velocity,offset = $offset');
                     GlobalKey currentKey = pressKeys[index];
-                    RenderBox renderBoxDelete = deleteKey.currentContext
-                        .findRenderObject();
-                    var offsetDelete = renderBoxDelete.localToGlobal(
-                        Offset.zero);
+                    RenderBox renderBoxDelete =
+                        deleteKey.currentContext.findRenderObject();
+                    var offsetDelete =
+                        renderBoxDelete.localToGlobal(Offset.zero);
                     if (offset.dy + currentKey.currentContext.size.height / 2 >
-                        offsetDelete.dy - deleteKey.currentContext.size.height) {
+                        offsetDelete.dy -
+                            deleteKey.currentContext.size.height) {
                       setState(() {
                         onDelete = true;
                       });
@@ -276,8 +267,8 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
                   ),
                   //这个是当item被拖动时，item原来位置用来占位的widget，（用户把item拖走后原来的地方该显示啥？就是这个）
                   childWhenDragging: Container(
+                    key: dragKey,
                     child: SizedBox(
-                      key: dragKey,
                       child: _showItemWhenCovered
                           ? widget.itemBuilder(context, _dataList[index], index)
                           : null,
@@ -294,12 +285,10 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
           right: 0,
           child: SlideTransition(
             position: tween,
-            child:
-            Visibility(
+            child: Visibility(
               visible: true,
               child: Container(
-                  color: onDelete ? Colors.red.shade700 : Colors.red
-                      .shade400,
+                  color: onDelete ? Colors.red.shade700 : Colors.red.shade400,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -314,7 +303,8 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
                         ),
                       ),
                     ],
-                  )),),
+                  )),
+            ),
           ),
         ),
       ],
