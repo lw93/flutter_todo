@@ -146,7 +146,7 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
                     print(
                         'onLeave renderBoxDelete x= ${offsetDelete.dx} y=${offsetDelete.dy}');
 
-                    if (offset.dy + currentContxt.size.height / 2 >
+                    /*if (offset.dy + currentContxt.size.height / 2 >
                         offsetDelete.dy -
                             deleteKey.currentContext.size.height * 3 / 2) {
                       setState(() {
@@ -156,7 +156,7 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
                       setState(() {
                         onDelete = false;
                       });
-                    }
+                    }*/
                     print(
                         'onLeave offset x = ${offset.dx} y = ${offset.dy} ${offset.distance} key = ${pressKeys[index].currentContext.size.height} ${pressKeys[index].currentContext.size.width}');
                     setState(() {
@@ -226,7 +226,7 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
                         deleteKey.currentContext.findRenderObject();
                     var offsetDelete =
                         renderBoxDelete.localToGlobal(Offset.zero);
-                    if (offset.dy + currentKey.currentContext.size.height / 2 >
+                    /*if (offset.dy + currentKey.currentContext.size.height / 2 >
                         offsetDelete.dy -
                             deleteKey.currentContext.size.height) {
                       setState(() {
@@ -236,7 +236,7 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
                       setState(() {
                         onDelete = false;
                       });
-                    }
+                    }*/
                     //拖动取消，还原数据源
                     setState(() {
                       _willAcceptIndex = -1;
@@ -287,23 +287,37 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
             position: tween,
             child: Visibility(
               visible: true,
-              child: Container(
-                  color: onDelete ? Colors.red.shade700 : Colors.red.shade400,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                      Text(
-                        onDelete ? "释放删除" : "移除",
-                        style: TextStyle(
+              child: DragTarget(builder: (context, data, rejects) {
+                return Container(
+                    color: onDelete ? Colors.red.shade700 : Colors.red.shade400,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.delete,
                           color: Colors.white,
                         ),
-                      ),
-                    ],
-                  )),
+                        Text(
+                          onDelete ? "释放删除" : "移除",
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ));
+              }, onLeave: (T fromData) {
+                setState(() {
+                  onDelete = false;
+                });
+              }, onWillAccept: (T fromData) {
+                setState(() {
+                  onDelete = true;
+                });
+                return true;
+              }, onAccept: (T fromData) {
+                _dataList.remove(fromData);
+                setState(() {});
+              }),
             ),
           ),
         ),
