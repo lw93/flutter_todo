@@ -33,7 +33,7 @@ class RegisterPresenter extends BasePresenter<RegisterModel, RegisterView> {
     });
     model.register(request).then((onValue) {
       if (onValue != null) {
-        if (onValue.code == 600 && onValue.data != null) {
+        if (onValue.code == HttpStatus.SUCCESS && onValue.data != null) {
           var registerResponse = LoginResponse.fromJson(onValue.data);
           view.onHttpSuccess(registerResponse);
           return;

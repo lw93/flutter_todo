@@ -6,7 +6,9 @@ import '../presenter/project_presenter.dart';
 import '../widgets/draggable_grideview2.dart';
 import 'base_view.dart';
 
-abstract class ProjectView extends BaseView {}
+abstract class ProjectView extends BaseView {
+  void showLoading();
+}
 
 class ProjectPage extends StatefulWidget {
   ProjectPage({Key key, this.todoType}) : super(key: key);
@@ -60,65 +62,78 @@ class _ProjectPageState extends BaseState<ProjectPage, ProjectPresenter>
           //如果显示到最后一个并且Icon总数小于200时继续获取数据
           if (index == 0) {
             return Card(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(
-                    Icons.add,
-                    size: 56,
-                    color: Colors.white,
-                  ),
-                  Text("新建项目", style: TextStyle(color: Colors.white)),
-                ],
+              child: InkWell(
+                splashColor: Colors.grey.shade400,
+                onTap: () {
+                  //TODO 点击事件
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.add,
+                      size: 56,
+                      color: Colors.white,
+                    ),
+                    Text("新建项目", style: TextStyle(color: Colors.white)),
+                  ],
+                ),
               ),
               color: Colors.grey.shade300,
             );
           }
           return Card(
-            child: Padding(
-              padding: EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text("项目名${index}",
-                          style: TextStyle(color: Colors.white, fontSize: 12)),
-                      GestureDetector(
-                        onTapDown: (detail) {
-                          _showEditDialog(context, index);
-                        },
-                        child: Icon(
-                          Icons.edit,
-                          size: 18,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+            child: InkWell(
+              splashColor: Colors.grey.shade300,
+              onTap: () {
+                //TODO 点击事件
+              },
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text("1.新建计划任务",
+                        Text("项目名${index}",
                             style:
                                 TextStyle(color: Colors.white, fontSize: 12)),
-                        SizedBox(
-                          height: 16,
+                        GestureDetector(
+                          onTapDown: (detail) {
+                            _showEditDialog(context, index);
+                          },
+                          child: Icon(
+                            Icons.edit,
+                            size: 18,
+                            color: Colors.white,
+                          ),
                         ),
-                        Text("2.长按可移动、删除",
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 12)),
                       ],
                     ),
-                  ),
-                  Align(
-                    child: Text("日期:2018-10-25",
-                        style: TextStyle(color: Colors.white, fontSize: 12)),
-                  ),
-                ],
+                    Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text("1.新建计划任务",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 12)),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          Text("2.长按可移动、删除",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 12)),
+                        ],
+                      ),
+                    ),
+                    Align(
+                      child: Text("日期:2018-10-25",
+                          style: TextStyle(color: Colors.white, fontSize: 12)),
+                    ),
+                  ],
+                ),
               ),
             ),
             color: Colors.grey.shade400,

@@ -25,7 +25,7 @@ class LoginPresenter extends BasePresenter<LoginModel, LoginView> {
     });
     model.login(request).then((onValue) {
       if (onValue != null) {
-        if (onValue.code == 600 && onValue.data != null) {
+        if (onValue.code == HttpStatus.SUCCESS && onValue.data != null) {
           var loginResponse = LoginResponse.fromJson(onValue.data);
           model.saveUserInfo(loginResponse);
           PreferencesUtil.saveMessageByStr(PreferencesKeys.pass, password);

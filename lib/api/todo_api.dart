@@ -15,4 +15,10 @@ class TodoApi {
   static const String UPDATE_PROJECT = 'api/v1.0/project'; //PUT
   static const String DELETE_PROJECT = 'api/v1.0/project/<projectId>'; //DELETE
   static const String USER_SETTING = 'api/v1.0/users/setting'; //POST
+  static const String GET_DEFAULT_PROJECTS = 'api/v1.0/projects/5afdb50f67f356003864b9cb/'; //GET
+}
+
+class HttpStatus{
+  static const int SUCCESS = 600;
+
 }
