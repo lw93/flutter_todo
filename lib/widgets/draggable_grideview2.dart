@@ -58,7 +58,7 @@ class DraggableGridView<T> extends StatefulWidget {
         );
 
   @override
-  State<StatefulWidget> createState() => new _DraggableGridViewState<T>();
+  State<StatefulWidget> createState() => _DraggableGridViewState<T>();
 }
 
 class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
@@ -92,6 +92,16 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
         AnimationController(duration: Duration(seconds: 1), vsync: this);
     tween = Tween(begin: Offset(0, 0), end: Offset(0, -1))
         .animate(animalController);
+  }
+
+  @override
+  void didUpdateWidget(DraggableGridView<T> oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+    pressKeys.clear();
+    for (int i = 0; i < _dataList.length; i++) {
+      pressKeys.add(GlobalKey());
+    }
   }
 
   @override
@@ -315,8 +325,13 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
                 });
                 return true;
               }, onAccept: (T fromData) {
-                _dataList.remove(fromData);
-                setState(() {});
+                var index = _dataList.indexOf(fromData);
+                if (0 != index) {
+                  _dataList.remove(fromData);
+                }
+                setState(() {
+                  onDelete = false;
+                });
               }),
             ),
           ),

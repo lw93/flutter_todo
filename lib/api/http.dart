@@ -19,6 +19,7 @@ class HttpManager {
   static const String PUT = 'put';
   static const String PATCH = 'patch';
   static const String DELETE = 'delete';
+  static const String OPTION = 'options';
 
   /// request method
   static Future<Map> request(String url, {data, method}) async {

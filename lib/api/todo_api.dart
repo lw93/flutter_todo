@@ -8,14 +8,16 @@ class TodoApi {
   static const String DELETE_TODOS = 'api/v1.0/todos/<todoId>'; //DELETE
   static const String GET_TODOS = 'api/v1.0/todos/<todoId>'; //GET
   static const String CREATE_GROUP = 'api/v1.0/groups'; //POST
-  static const String UPDATE_GROUP = 'api/v1.0/groups/<groupId>'; //PUT
+  static const String UPDATE_GROUP = 'api/v1.0/groups'; //PUT
   static const String GET_GROUP_PROJECTS = 'api/v1.0/groups/projects/<projectId>'; //GET
   static const String DELETE_GROUP = 'api/v1.0/groups/<groupId>'; //DELETE
   static const String CREATE_PROJECT = 'api/v1.0/project'; //POST
   static const String UPDATE_PROJECT = 'api/v1.0/project'; //PUT
   static const String DELETE_PROJECT = 'api/v1.0/project/<projectId>'; //DELETE
   static const String USER_SETTING = 'api/v1.0/users/setting'; //POST
-  static const String GET_DEFAULT_PROJECTS = 'api/v1.0/projects/5afdb50f67f356003864b9cb/'; //GET
+  static const String GET_DEFAULT_PROJECTS = 'api/v1.0/projects/<projectId>'; //GET
+  static const String GET_PROJECT_TODOS = 'api/v1.0/todos/projects/<projectId>/<objectId>'; //GET
+
 }
 
 class HttpStatus{
