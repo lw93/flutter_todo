@@ -10,7 +10,7 @@ class TodoApi {
   static const String CREATE_GROUP = 'api/v1.0/groups'; //POST
   static const String UPDATE_GROUP = 'api/v1.0/groups'; //PUT
   static const String GET_GROUP_PROJECTS = 'api/v1.0/groups/projects/<projectId>'; //GET
-  static const String DELETE_GROUP = 'api/v1.0/groups/<groupId>'; //DELETE
+  static const String DELETE_GROUP = 'api/v1.0/groups/<objectId>'; //DELETE
   static const String CREATE_PROJECT = 'api/v1.0/project'; //POST
   static const String UPDATE_PROJECT = 'api/v1.0/project'; //PUT
   static const String DELETE_PROJECT = 'api/v1.0/project/<projectId>'; //DELETE

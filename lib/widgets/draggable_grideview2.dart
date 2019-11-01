@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../res/scroll_physics_theme.dart';
 
 typedef EditChangeListener();
 typedef Widget WidgetBuilder<T>(BuildContext context, T data, int position);
 typedef void OnDragFinish(int oldIndex, int newIndex);
-
+typedef DeleteListener = Future<bool> Function(int index);
+typedef void OnRefresh(bool up);
 class DraggableGridView<T> extends StatefulWidget {
   final WidgetBuilder<T> itemBuilder;
   final List<T> items;
@@ -35,6 +36,9 @@ class DraggableGridView<T> extends StatefulWidget {
   final Widget deleteIcon;
 
   //final DeleteIconClickListener deleteIconClickListener;
+  final DeleteListener deleteListener;
+  final OnRefresh onRefresh;
+  final RefreshController controller;
 
   DraggableGridView({
     @required this.items,
@@ -51,6 +55,9 @@ class DraggableGridView<T> extends StatefulWidget {
     this.longPressDuration: 800,
     this.deleteIcon,
     this.canAccept: true,
+    this.deleteListener,
+    this.onRefresh,
+    this.controller,
     //this.deleteIconClickListener,
   }) : assert(
           items != null,
@@ -109,54 +116,59 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
     // TODO: implement build
     return Stack(
       children: <Widget>[
-        GridView.builder(
-            key: grideKey,
-            controller: _scrollController,
-            physics: PhysicsTheme.commonScrollPhysicsTheme,
-            scrollDirection: widget.scrollDirection,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              childAspectRatio: widget.childAspectRatio,
-              //item宽高比
-              crossAxisCount: widget.crossAxisCount,
-              //列数
-              mainAxisSpacing: widget.mainAxisSpacing,
-            ),
-            itemCount: _dataList.length,
-            itemBuilder: (context, index) {
-              return LayoutBuilder(builder: (context, constraint) {
-                return LongPressDraggable(
-                  key: pressKeys[index],
-                  data: _dataList[index],
-                  child: DragTarget<T>(
-                      //松手时 如果onWillAccept返回true 那么就会调用，本案例不使用。
-                      onAccept: (T data) {
-                    print('onAccept');
-                  },
-                      //绘制widget
-                      builder: (context, data, rejects) {
-                    return _willAcceptIndex >= 0 && _willAcceptIndex == index
-                        ? null
-                        : widget.itemBuilder(context, _dataList[index], index);
-                  },
-                      //手指拖着一个widget从另一个widget头上滑走时会调用
-                      onLeave: (T data) {
-                    //TODO 这里应该还可以优化，当用户滑出而又没有滑入某个item的时候 可以重新排列  让当前被拖走的item的空白被填满
-                    int fromIndex = _dataList.indexOf(data);
-                    print('onLeave: ${index} from item: $fromIndex');
-                    _willAcceptIndex = -1;
-                    GlobalKey currentKey = pressKeys[fromIndex];
-                    BuildContext currentContxt = currentKey.currentContext;
-                    RenderBox renderBox = currentContxt.findRenderObject();
-                    var offset = renderBox.localToGlobal(Offset.zero);
+      SmartRefresher(
+      enablePullDown: true,
+      enablePullUp: false,
+      controller: widget.controller,
+      onRefresh: widget.onRefresh,
+      child:GridView.builder(
+          key: grideKey,
+          controller: _scrollController,
+          physics: PhysicsTheme.commonScrollPhysicsTheme,
+          scrollDirection: widget.scrollDirection,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            childAspectRatio: widget.childAspectRatio,
+            //item宽高比
+            crossAxisCount: widget.crossAxisCount,
+            //列数
+            mainAxisSpacing: widget.mainAxisSpacing,
+          ),
+          itemCount: _dataList.length,
+          itemBuilder: (context, index) {
+            return LayoutBuilder(builder: (context, constraint) {
+              return LongPressDraggable(
+                key: pressKeys[index],
+                data: _dataList[index],
+                child: DragTarget<T>(
+                  //松手时 如果onWillAccept返回true 那么就会调用，本案例不使用。
+                    onAccept: (T data) {
+                      print('onAccept');
+                    },
+                    //绘制widget
+                    builder: (context, data, rejects) {
+                      return _willAcceptIndex >= 0 && _willAcceptIndex == index
+                          ? null
+                          : widget.itemBuilder(context, _dataList[index], index);
+                    },
+                    //手指拖着一个widget从另一个widget头上滑走时会调用
+                    onLeave: (T data) {
+                      //TODO 这里应该还可以优化，当用户滑出而又没有滑入某个item的时候 可以重新排列  让当前被拖走的item的空白被填满
+                      int fromIndex = _dataList.indexOf(data);
+                      print('onLeave: ${index} from item: $fromIndex');
+                      _willAcceptIndex = -1;
+                      GlobalKey currentKey = pressKeys[fromIndex];
+                      BuildContext currentContxt = currentKey.currentContext;
+                      RenderBox renderBox = currentContxt.findRenderObject();
+                      var offset = renderBox.localToGlobal(Offset.zero);
 
-                    RenderBox renderBoxDelete =
-                        deleteKey.currentContext.findRenderObject();
-                    var offsetDelete =
-                        renderBoxDelete.localToGlobal(Offset.zero);
-                    print(
-                        'onLeave renderBoxDelete x= ${offsetDelete.dx} y=${offsetDelete.dy}');
+                      RenderBox renderBoxDelete =
+                      deleteKey.currentContext.findRenderObject();
+                      var offsetDelete =
+                      renderBoxDelete.localToGlobal(Offset.zero);
+                      print(
+                          'onLeave renderBoxDelete x= ${offsetDelete.dx} y=${offsetDelete.dy}');
 
-                    /*if (offset.dy + currentContxt.size.height / 2 >
+                      /*if (offset.dy + currentContxt.size.height / 2 >
                         offsetDelete.dy -
                             deleteKey.currentContext.size.height * 3 / 2) {
                       setState(() {
@@ -167,76 +179,76 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
                         onDelete = false;
                       });
                     }*/
-                    print(
-                        'onLeave offset x = ${offset.dx} y = ${offset.dy} ${offset.distance} key = ${pressKeys[index].currentContext.size.height} ${pressKeys[index].currentContext.size.width}');
-                    setState(() {
-                      _showItemWhenCovered = false;
-                      //_dataList = _dataBackup.sublist(0);
-                    });
-                  },
-                      //接下来松手 是否需要将数据给这个widget？  因为需要在拖动时改变UI，所以在这里直接修改数据源
-                      onWillAccept: (T fromData) {
-                    print('onWillAccept');
-                    int fromIndex = _dataList.indexOf(fromData);
-                    print('$index will accept item ${fromIndex}');
-                    final accept = fromData != _dataList[index];
-
-                    RenderBox renderBoxDelete =
-                        deleteKey.currentContext.findRenderObject();
-                    var offsetDelete =
-                        renderBoxDelete.localToGlobal(Offset.zero);
-                    print(
-                        'onWillAccept renderBoxDelete x= ${offsetDelete.dx} y=${offsetDelete.dy}');
-
-                    double mod = index % 2.0;
-                    double height = pressKeys[index].currentContext.size.height;
-                    double positiomn;
-                    if (mod == 1) {
-                      positiomn = index / 2 * height;
-                    } else {
-                      positiomn = (index + 1) / 2 * height;
-                    }
-                    print('onWillAccept positiomn height ${positiomn}');
-                    _scrollController.animateTo(positiomn - height,
-                        curve: Curves.ease,
-                        duration: Duration(milliseconds: 800));
-                    if (accept) {
-                      _willAcceptIndex = index;
-                      _showItemWhenCovered = true;
-                      //_dataList = _dataBackup.sublist(0);
-                      //final fromData = _dataList[index];
+                      print(
+                          'onLeave offset x = ${offset.dx} y = ${offset.dy} ${offset.distance} key = ${pressKeys[index].currentContext.size.height} ${pressKeys[index].currentContext.size.width}');
                       setState(() {
-                        T tmp = _dataList[index];
-                        _dataList[index] = fromData;
-                        _dataList[fromIndex] = tmp;
-                        GlobalKey tmpKey = pressKeys[index];
-                        pressKeys[index] = pressKeys[fromIndex];
-                        pressKeys[fromIndex] = tmpKey;
+                        _showItemWhenCovered = false;
+                        //_dataList = _dataBackup.sublist(0);
+                      });
+                    },
+                    //接下来松手 是否需要将数据给这个widget？  因为需要在拖动时改变UI，所以在这里直接修改数据源
+                    onWillAccept: (T fromData) {
+                      print('onWillAccept');
+                      int fromIndex = _dataList.indexOf(fromData);
+                      print('$index will accept item ${fromIndex}');
+                      final accept = fromData != _dataList[index];
+
+                      RenderBox renderBoxDelete =
+                      deleteKey.currentContext.findRenderObject();
+                      var offsetDelete =
+                      renderBoxDelete.localToGlobal(Offset.zero);
+                      print(
+                          'onWillAccept renderBoxDelete x= ${offsetDelete.dx} y=${offsetDelete.dy}');
+
+                      double mod = index % 2.0;
+                      double height = pressKeys[index].currentContext.size.height;
+                      double positiomn;
+                      if (mod == 1) {
+                        positiomn = index / 2 * height;
+                      } else {
+                        positiomn = (index + 1) / 2 * height;
+                      }
+                      print('onWillAccept positiomn height ${positiomn}');
+                      /*_scrollController.animateTo(positiomn - height,
+                          curve: Curves.ease,
+                          duration: Duration(milliseconds: 800));*/
+                      if (accept) {
+                        _willAcceptIndex = index;
+                        _showItemWhenCovered = true;
+                        //_dataList = _dataBackup.sublist(0);
+                        //final fromData = _dataList[index];
+                        setState(() {
+                          T tmp = _dataList[index];
+                          _dataList[index] = fromData;
+                          _dataList[fromIndex] = tmp;
+                          GlobalKey tmpKey = pressKeys[index];
+                          pressKeys[index] = pressKeys[fromIndex];
+                          pressKeys[fromIndex] = tmpKey;
 //                    _dataList.removeAt(index);
 //                    _dataList.insert(index, fromData);
-                      });
-                    }
-                    return accept;
-                  }),
-                  onDragStarted: () {
-                    //开始拖动，备份数据源
-                    //_draggingItemIndex = index;
-                    //_dataBackup = _dataList.sublist(0);
-                    print(
-                        'item $index ---------------------------onDragStarted');
-                    if (null != animalController) {
-                      animalController.forward();
-                    }
-                  },
-                  onDraggableCanceled: (Velocity velocity, Offset offset) {
-                    print(
-                        'item $index ---------------------------onDraggableCanceled,velocity = $velocity,offset = $offset');
-                    GlobalKey currentKey = pressKeys[index];
-                    RenderBox renderBoxDelete =
-                        deleteKey.currentContext.findRenderObject();
-                    var offsetDelete =
-                        renderBoxDelete.localToGlobal(Offset.zero);
-                    /*if (offset.dy + currentKey.currentContext.size.height / 2 >
+                        });
+                      }
+                      return accept;
+                    }),
+                onDragStarted: () {
+                  //开始拖动，备份数据源
+                  //_draggingItemIndex = index;
+                  //_dataBackup = _dataList.sublist(0);
+                  print(
+                      'item $index ---------------------------onDragStarted');
+                  if (null != animalController) {
+                    animalController.forward();
+                  }
+                },
+                onDraggableCanceled: (Velocity velocity, Offset offset) {
+                  print(
+                      'item $index ---------------------------onDraggableCanceled,velocity = $velocity,offset = $offset');
+                  GlobalKey currentKey = pressKeys[index];
+                  RenderBox renderBoxDelete =
+                  deleteKey.currentContext.findRenderObject();
+                  var offsetDelete =
+                  renderBoxDelete.localToGlobal(Offset.zero);
+                  /*if (offset.dy + currentKey.currentContext.size.height / 2 >
                         offsetDelete.dy -
                             deleteKey.currentContext.size.height) {
                       setState(() {
@@ -247,46 +259,47 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
                         onDelete = false;
                       });
                     }*/
-                    //拖动取消，还原数据源
-                    setState(() {
-                      _willAcceptIndex = -1;
-                      _showItemWhenCovered = false;
-                      //_dataList = _dataBackup.sublist(0);
-                    });
-                    if (null != animalController) {
-                      animalController.reverse();
-                    }
-                  },
-                  onDragCompleted: () {
-                    //拖动完成，刷新状态，重置willAcceptIndex
-                    print(
-                        "item $index ---------------------------onDragCompleted");
-                    if (null != animalController) {
-                      animalController.reverse();
-                    }
-                    setState(() {
-                      _showItemWhenCovered = false;
-                      _willAcceptIndex = -1;
-                    });
-                  },
-                  //用户拖动item时，那个给用户看起来被拖动的widget，（就是会跟着用户走的那个widget）
-                  feedback: SizedBox(
-                    width: constraint.maxWidth,
-                    height: constraint.maxHeight,
-                    child: widget.itemBuilder(context, _dataList[index], index),
+                  //拖动取消，还原数据源
+                  setState(() {
+                    _willAcceptIndex = -1;
+                    _showItemWhenCovered = false;
+                    //_dataList = _dataBackup.sublist(0);
+                  });
+                  if (null != animalController) {
+                    animalController.reverse();
+                  }
+                },
+                onDragCompleted: () {
+                  //拖动完成，刷新状态，重置willAcceptIndex
+                  print(
+                      "item $index ---------------------------onDragCompleted");
+                  if (null != animalController) {
+                    animalController.reverse();
+                  }
+                  setState(() {
+                    _showItemWhenCovered = false;
+                    _willAcceptIndex = -1;
+                  });
+                },
+                //用户拖动item时，那个给用户看起来被拖动的widget，（就是会跟着用户走的那个widget）
+                feedback: SizedBox(
+                  width: constraint.maxWidth,
+                  height: constraint.maxHeight,
+                  child: widget.itemBuilder(context, _dataList[index], index),
+                ),
+                //这个是当item被拖动时，item原来位置用来占位的widget，（用户把item拖走后原来的地方该显示啥？就是这个）
+                childWhenDragging: Container(
+                  key: dragKey,
+                  child: SizedBox(
+                    child: _showItemWhenCovered
+                        ? widget.itemBuilder(context, _dataList[index], index)
+                        : null,
                   ),
-                  //这个是当item被拖动时，item原来位置用来占位的widget，（用户把item拖走后原来的地方该显示啥？就是这个）
-                  childWhenDragging: Container(
-                    key: dragKey,
-                    child: SizedBox(
-                      child: _showItemWhenCovered
-                          ? widget.itemBuilder(context, _dataList[index], index)
-                          : null,
-                    ),
-                  ),
-                );
-              });
-            }),
+                ),
+              );
+            });
+          }),
+    ),
         Positioned(
           key: deleteKey,
           bottom: -72,
@@ -326,11 +339,17 @@ class _DraggableGridViewState<T> extends State<DraggableGridView<T>>
                 return true;
               }, onAccept: (T fromData) {
                 var index = _dataList.indexOf(fromData);
-                if (0 != index) {
-                  _dataList.remove(fromData);
-                }
-                setState(() {
-                  onDelete = false;
+                Future<bool> reslt = widget.deleteListener(index);
+                reslt.then((onValue){
+                  if (onValue != null && onValue) {
+                    var index = _dataList.indexOf(fromData);
+                    if (0 != index) {
+                      _dataList.remove(fromData);
+                    }
+                    setState(() {
+                      onDelete = false;
+                    });
+                  }
                 });
               }),
             ),

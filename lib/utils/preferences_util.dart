@@ -36,6 +36,8 @@ class PreferencesKeys {
   static const String showGuide = "showGuide";
   static const String userName = "userName";
   static const String userId = "userId";
+  static const String objectId = "objectId";
   static const String pass = "pass";
   static const String emailEveryDayEable = "emailDaliy";
+  static const String projectId = "projectId" ;
 }

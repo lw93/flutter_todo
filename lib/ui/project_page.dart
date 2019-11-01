@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../api/index.dart';
 import '../presenter/project_presenter.dart';
 import '../res/strings.dart';
@@ -16,6 +16,8 @@ abstract class ProjectView extends BaseView {
   void showData(List<Project> todos);
 
   void updateProject(Project project);
+
+  void addProject(Project project);
 }
 
 class ProjectPage extends StatefulWidget {
@@ -30,13 +32,16 @@ class ProjectPage extends StatefulWidget {
 class _ProjectPageState extends BaseState<ProjectPage, ProjectPresenter>
     with AutomaticKeepAliveClientMixin
     implements ProjectView {
-  List<Project> projects;
   List<Project> icons;
   List<GlobalKey> keys = List();
   Project updateCurrProject;
   Project olderCurrProject;
   GlobalKey globalKey;
+  TextEditingController _projectEditController = TextEditingController();
+  TextEditingController _projectAddController = TextEditingController();
+
   //GlobalKey anchorKey = GlobalKey();
+  RefreshController _refreshController = RefreshController();
 
   @override
   void initData() {
@@ -55,9 +60,32 @@ class _ProjectPageState extends BaseState<ProjectPage, ProjectPresenter>
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    icons.clear();
+    icons = null;
+    keys.clear();
+    keys = null;
+    updateCurrProject = null;
+    olderCurrProject = null;
+    globalKey = null;
+    _projectEditController = null;
+    _projectAddController = null;
+    _refreshController.scrollController.dispose();
+    _refreshController = null;
+  }
+
+  @override
   ProjectPresenter initPresenter() {
     // TODO: implement initPresenter
     return ProjectPresenter(this);
+  }
+
+  void _onRefresh(bool up) {
+    // monitor network fetch
+    _refreshController.sendBack(true, RefreshStatus.completed);
+    presenter.queryProjects();
   }
 
   @override
@@ -74,6 +102,8 @@ class _ProjectPageState extends BaseState<ProjectPage, ProjectPresenter>
         color: Colors.black87,
         key: globalKey,
         child: DraggableGridView(
+            onRefresh: _onRefresh,
+            controller: _refreshController,
             items: icons,
             itemBuilder: (context, obj, index) {
               //如果显示到最后一个并且Icon总数小于200时继续获取数据
@@ -82,7 +112,7 @@ class _ProjectPageState extends BaseState<ProjectPage, ProjectPresenter>
                   child: InkWell(
                     splashColor: Colors.grey.shade400,
                     onTap: () {
-                      //TODO 点击事件
+                      _showAddDialog(context);
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -147,7 +177,7 @@ class _ProjectPageState extends BaseState<ProjectPage, ProjectPresenter>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                  todes.length > 0
+                                  null != todes && todes.length > 0
                                       ? "1.${todes?.elementAt(0)?.title ?? "新建计划任务"}"
                                       : "1.新建计划任务",
                                   style: TextStyle(
@@ -156,7 +186,7 @@ class _ProjectPageState extends BaseState<ProjectPage, ProjectPresenter>
                                 height: 16,
                               ),
                               Text(
-                                  todes.length > 1
+                                  null != todes && todes.length > 1
                                       ? "2.${todes?.elementAt(1)?.title ?? "长按可移动、删除"}"
                                       : "2.长按可移动、删除",
                                   style: TextStyle(
@@ -179,6 +209,11 @@ class _ProjectPageState extends BaseState<ProjectPage, ProjectPresenter>
                 ),
                 color: Colors.grey.shade400,
               );
+            },
+            deleteListener: (index) {
+              Project removeData = icons.elementAt(index);
+              Future<bool> res = presenter.removeProject(removeData);
+              return res;
             }));
 //    return GridView.builder(
 //        physics: PhysicsTheme.commonScrollPhysicsTheme,
@@ -318,9 +353,8 @@ class _ProjectPageState extends BaseState<ProjectPage, ProjectPresenter>
   bool get wantKeepAlive => true;
 
   void _showEditDialog(BuildContext context, int index) {
-    TextEditingController _projectController = TextEditingController();
     String updateName = icons[index].name;
-    _projectController
+    _projectEditController
       ..clear()
       ..text = updateName;
     showDialog(
@@ -328,7 +362,7 @@ class _ProjectPageState extends BaseState<ProjectPage, ProjectPresenter>
       child: AlertDialog(
         title: Text("更新"),
         content: TextField(
-          controller: _projectController,
+          controller: _projectEditController,
           decoration: InputDecoration(
             hintText: "请输入内容",
             labelText: "项目名",
@@ -349,8 +383,41 @@ class _ProjectPageState extends BaseState<ProjectPage, ProjectPresenter>
             child: Text("确定"),
             onPressed: () {
               Navigator.pop(globalKey.currentContext);
-              updateCurrProject.name = _projectController.text;
+              updateCurrProject.name = _projectEditController.text;
               presenter.updateProject(updateCurrProject);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddDialog(BuildContext context) {
+    _projectAddController.clear();
+    showDialog(
+      context: context,
+      child: AlertDialog(
+        title: Text("添加"),
+        content: TextField(
+          controller: _projectAddController,
+          decoration: InputDecoration(
+            hintText: "请输入内容",
+            labelText: "项目名",
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text("取消"),
+            onPressed: () {
+              Navigator.pop(globalKey.currentContext);
+            },
+          ),
+          FlatButton(
+            child: Text("确定"),
+            onPressed: () {
+              Navigator.pop(globalKey.currentContext);
+              presenter.addProject(_projectAddController.text);
             },
           ),
         ],
@@ -376,6 +443,7 @@ class _ProjectPageState extends BaseState<ProjectPage, ProjectPresenter>
   void hideLoading() {
     // TODO: implement hideLoading
     super.hideLoading();
+    _refreshController.sendBack(true, RefreshStatus.completed);
   }
 
   @override
@@ -385,6 +453,16 @@ class _ProjectPageState extends BaseState<ProjectPage, ProjectPresenter>
     if (index != -1) {
       setState(() {
         icons[index].name = project.name;
+      });
+    }
+  }
+
+  @override
+  void addProject(Project project) {
+    // TODO: implement addProject
+    if (null != project) {
+      setState(() {
+        icons.insert(1, project);
       });
     }
   }
