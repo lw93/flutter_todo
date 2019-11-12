@@ -5,7 +5,7 @@ import '../ui/login_page.dart';
 import '../ui/main_page.dart';
 import '../ui/splash_page.dart';
 import '../ui/register_page.dart';
-
+import '../ui/list_page.dart';
 
 final onGenerateRoute = (RouteSettings settings) {
   final String pageName = settings.name;
@@ -19,7 +19,7 @@ final onGenerateRoute = (RouteSettings settings) {
       return route;
     }
     final Route route =
-    MaterialPageRoute(builder: (contex) => pageContentBuilder(contex));
+        MaterialPageRoute(builder: (contex) => pageContentBuilder(contex));
     return route;
   }
 };
@@ -30,4 +30,5 @@ final routers = {
   '/login': (context) => LoginPage(),
   '/register': (context) => RegisterPage(),
   '/main': (context) => MainPage(),
+  '/todos': (context, {arguments}) => TodoListPage(project: arguments),
 };

@@ -145,6 +145,8 @@ class _ProjectPageState extends BaseState<ProjectPage, ProjectPresenter>
                   splashColor: Colors.grey.shade300,
                   onTap: () {
                     //TODO 点击事件
+                    olderCurrProject = icons[index];
+                    Navigator.pushNamed(context, "/todos",arguments: olderCurrProject);
                   },
                   child: Padding(
                     padding: EdgeInsets.all(10),
