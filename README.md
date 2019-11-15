@@ -2,6 +2,11 @@
 
 A new Flutter application.
 
+
+### Android 
+点击下载
+[最新版](https://https://raw.githubusercontent.com/lw93/flutter_todo/master/release/app-android-release.apk)
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
