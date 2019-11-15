@@ -15,11 +15,13 @@ abstract class TodoListView extends BaseView {
 
   void showError(String msg);
 
-  void showTodos(List<Todo> todos);
+  void showTodo(Todo todo);
 
   void addTodo(Todo todo);
 
   void deleteTodo(Todo todo);
+
+  void refreshTodos(List<Todo> todos);
 }
 
 class TodoListPage extends StatefulWidget {
@@ -49,6 +51,7 @@ class _TodoListPageState extends BaseState<TodoListPage, TodoListPresenter>
           "userId:${_project.userId}"
       );
     }*/
+//    presenter.queryTodos(_project);
     _refreshController.sendBack(true, RefreshStatus.completed);
   }
 
@@ -96,35 +99,6 @@ class _TodoListPageState extends BaseState<TodoListPage, TodoListPresenter>
     //_project = ModalRoute.of(context).settings.arguments;
 
     super.build(context);
-    if (todoList.isEmpty) {
-      return Scaffold(
-          appBar: AppBar(
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Icons.add,
-                  color: Colors.white,
-                  size: 24,
-                ),
-                onPressed: _addTodo,
-              ),
-            ],
-          ),
-          body: Center(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Icon(
-                Icons.hourglass_empty,
-                size: 36,
-              ),
-              Padding(
-                padding: EdgeInsets.all(16),
-                child: Text("暂无数据"),
-              ),
-            ],
-          )));
-    }
     return Scaffold(
         key: globalKey,
         appBar: AppBar(
@@ -142,60 +116,81 @@ class _TodoListPageState extends BaseState<TodoListPage, TodoListPresenter>
         body: ModalProgressHUD(
             inAsyncCall: isLoading,
             color: Colors.black87,
-            child: SmartRefresher(
-              enablePullDown: true,
-              enablePullUp: false,
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: ListView.builder(
-                  physics: PhysicsTheme.commonScrollPhysicsTheme,
-                  itemCount: todoList.length,
-                  padding: const EdgeInsets.all(16.0),
-                  itemBuilder: (context, index) {
-                    //如果显示到最后一个并且Icon总数小于200时继续获取数据
-                    Todo item = todoList[index];
-                    return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Slidable(
-                            key: Key('key$index'),
-                            // 侧滑按钮所占的宽度
-                            actionExtentRatio: 0.20,
-                            actionPane: SlidableDrawerActionPane(),
-                            secondaryActions: <Widget>[
-                              IconSlideAction(
-                                caption: 'Done',
-                                color: Colors.green,
-                                icon: Icons.done_all,
-                                onTap: () =>
-                                    presenter.finishTodo(_project, index),
-                              ),
-                              IconSlideAction(
-                                caption: 'Delete',
-                                color: Colors.red,
-                                icon: Icons.delete,
-                                onTap: () =>
-                                    presenter.deleteTodo(_project, index),
-                              ),
-                            ],
-                            child: Container(
-                              child: ListTile(
-                                leading: Icon(Icons.access_alarm),
-                                title: Text(item?.title ?? ""),
-                                trailing: item?.onFile ?? false
-                                    ? Icon(Icons.done)
-                                    : Icon(Icons.undo),
-                              ),
-                              /* Divider(
+            child: Stack(
+              children: <Widget>[
+                SmartRefresher(
+                  enablePullDown: false,
+                  enablePullUp: false,
+                  controller: _refreshController,
+                  onRefresh: _onRefresh,
+                  child: ListView.builder(
+                      physics: PhysicsTheme.commonScrollPhysicsTheme,
+                      itemCount: todoList.length,
+                      padding: const EdgeInsets.all(16.0),
+                      itemBuilder: (context, index) {
+                        //如果显示到最后一个并且Icon总数小于200时继续获取数据
+                        Todo item = todoList[index];
+                        return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Slidable(
+                                key: Key('key$index'),
+                                // 侧滑按钮所占的宽度
+                                actionExtentRatio: 0.20,
+                                actionPane: SlidableDrawerActionPane(),
+                                secondaryActions: <Widget>[
+                                  IconSlideAction(
+                                    caption: 'Done',
+                                    color: Colors.green,
+                                    icon: Icons.done_all,
+                                    onTap: () =>
+                                        presenter.finishTodo(_project, index),
+                                  ),
+                                  IconSlideAction(
+                                    caption: 'Delete',
+                                    color: Colors.red,
+                                    icon: Icons.delete,
+                                    onTap: () =>
+                                        presenter.deleteImmedately(item),
+                                  ),
+                                ],
+                                child: Container(
+                                  child: ListTile(
+                                    leading: Icon(Icons.access_alarm),
+                                    title: Text(item?.title ?? ""),
+                                    trailing: item?.onFile ?? false
+                                        ? Icon(Icons.done)
+                                        : Icon(Icons.undo),
+                                  ),
+                                  /* Divider(
                         color: Colors.grey,
                       ),*/
-                            ),
-                          ),
-                          Divider(
-                            color: Colors.grey,
-                          ),
-                        ]);
-                  }),
+                                ),
+                              ),
+                              Divider(
+                                color: Colors.grey,
+                              ),
+                            ]);
+                      }),
+                ),
+                Offstage(
+                  offstage: todoList.isNotEmpty,
+                  child: Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        Icons.hourglass_empty,
+                        size: 36,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Text("暂无数据"),
+                      ),
+                    ],
+                  )),
+                )
+              ],
             )));
   }
 
@@ -239,7 +234,7 @@ class _TodoListPageState extends BaseState<TodoListPage, TodoListPresenter>
     // TODO: implement addTodo
     if (_project != null) {
       setState(() {
-        _project.todos.results.add(todo);
+        _project.todos.results.insert(0, todo);
       });
     }
   }
@@ -247,16 +242,37 @@ class _TodoListPageState extends BaseState<TodoListPage, TodoListPresenter>
   @override
   void deleteTodo(Todo todo) {
     // TODO: implement deleteTodo
+    todoList.remove(todo);
+    setState(() {});
   }
 
   @override
-  void showTodos(List<Todo> todos) {
+  void showTodo(Todo todo) {
     // TODO: implement showTodos
+    if (todoList != null) {
+      todoList.forEach((item) {
+        if (item.objectId == todo.objectId) {
+          item.onFile = todo.onFile;
+          item.onFileAt = todo.onFileAt;
+          setState(() {});
+          return;
+        }
+      });
+    }
   }
 
   @override
   void showError(String msg) {
     // TODO: implement showError
     Scaffold.of(context).showSnackBar(SnackBar(content: Text("$msg")));
+  }
+
+  @override
+  void refreshTodos(List<Todo> todos) {
+    // TODO: implement refreshTodos
+    if (_project != null) {
+      _project.todos.results = todos;
+      setState(() {});
+    }
   }
 }

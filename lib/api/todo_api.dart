@@ -4,7 +4,7 @@ class TodoApi {
   static const String REGISTER = 'api/v1.0/users/register'; //POST
   static const String PLANNER = 'api/v1.0/users/<userId>'; //GET
   static const String CREATE_TODOS = 'api/v1.0/todos'; //POST
-  static const String UPDATE_TODOS = 'api/v1.0/todos/<todoId>'; //PUT
+  static const String UPDATE_TODOS = 'api/v1.0/todos/<objectId>'; //PUT
   static const String DELETE_TODOS = 'api/v1.0/todos/<todoId>'; //DELETE
   static const String GET_TODOS = 'api/v1.0/todos/<todoId>'; //GET
   static const String CREATE_GROUP = 'api/v1.0/groups'; //POST
@@ -17,6 +17,9 @@ class TodoApi {
   static const String USER_SETTING = 'api/v1.0/users/setting'; //POST
   static const String GET_DEFAULT_PROJECTS = 'api/v1.0/projects/<projectId>'; //GET
   static const String GET_PROJECT_TODOS = 'api/v1.0/todos/projects/<projectId>/<objectId>'; //GET
+
+  static const String GET_PROJECT_TODOS_ONFILE = 'api/v1.0/todos/<userId>/<groupId>'; //GET
+  static const String DELETE_TODO_NOW = 'api/v1.0/todos/<objectId>'; //DELETE
 
 }
 

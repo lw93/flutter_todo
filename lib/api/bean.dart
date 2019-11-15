@@ -89,7 +89,7 @@ class Todo {
   String groupId;
   String objectId;
   bool onFile;
-  bool onFileAt;
+  double onFileAt;
   int priority;
   List tags;
   String title;
